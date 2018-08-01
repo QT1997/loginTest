@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.UsersDao">
+
+	<resultMap type="Users" id="usersResultMap">
+		<id property="id" column="id" />
+		<result property="username" column="username" />
+		<result property="password" column="password" />
+		<result property="roles.id" column="roles_id" />
+		<result property="roles.name" column="roles_name" />	
+		<collection property="roles.permisions" ofType="Permision">
+			<id property="id" column="permision_id" />
+			<result property="name" column="permision_name" />
+			<result property="parent_id" column="permision_parent_id" />
+		</collection>
+	</resultMap>
+
+	<select id="findByUsername" parameterType="String" resultMap="usersResultMap">
+		select users.id,users.username,users.password,
+		roles.id as roles_id,roles.name as roles_name,
+		permision.id as permision_id,permision.name as permision_name,
+		permision.parent_id as permision_parent_id
+		from users left join roles
+		on users.roles_id = roles.id
+		left join roles_permision
+		on roles.id = roles_permision.roles_id
+		left join permision
+		on roles_permision.permision_id = permision.id
+		where username = #{username}
+	</select>
+
+</mapper>
